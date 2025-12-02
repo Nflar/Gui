@@ -1,4 +1,3 @@
--- GUI Library (embedded)
 local Lib = {}
 local UIS = game:GetService("UserInputService")
 local TS = game:GetService("TweenService")
@@ -510,5 +509,3 @@ function Lib:CreateWindow(config)
     
     return win
 end
-
-return Lib
