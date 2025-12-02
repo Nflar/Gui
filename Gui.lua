@@ -510,3 +510,5 @@ function Lib:CreateWindow(config)
     
     return win
 end
+
+return Lib
