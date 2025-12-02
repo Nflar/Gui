@@ -1,4 +1,3 @@
--- Gui.lua
 local Lib = {}
 local UIS = game:GetService("UserInputService")
 local TS = game:GetService("TweenService")
@@ -19,7 +18,6 @@ function Lib:CreateWindow(config)
     sg.ResetOnSpawn = false
     sg.Parent = game.CoreGui
     
-    -- Mobile toggle button (only for mobile)
     local toggleBtn
     if isMobile and toggleButtonImage then
         toggleBtn = Instance.new("ImageButton", sg)
@@ -59,7 +57,6 @@ function Lib:CreateWindow(config)
     main.BorderSizePixel = 0
     Instance.new("UICorner", main).CornerRadius = UDim.new(0, 10)
     
-    -- Left Sidebar
     local sidebar = Instance.new("ScrollingFrame", main)
     sidebar.Size = UDim2.new(0, 180*scale, 1, 0)
     sidebar.Position = UDim2.new(0, 0, 0, 0)
@@ -71,7 +68,6 @@ function Lib:CreateWindow(config)
     local sidebarCorner = Instance.new("UICorner", sidebar)
     sidebarCorner.CornerRadius = UDim.new(0, 10)
     
-    -- Logo in sidebar
     if logoId then
         local logoFrame = Instance.new("Frame", sidebar)
         logoFrame.Size = UDim2.new(1, 0, 0, 60*scale)
@@ -103,7 +99,6 @@ function Lib:CreateWindow(config)
         sidebar.CanvasSize = UDim2.new(0, 0, 0, sidebarLayout.AbsoluteContentSize.Y + 10)
     end)
     
-    -- Top bar with search
     local topBar = Instance.new("Frame", main)
     topBar.Size = UDim2.new(1, -190*scale, 0, 50*scale)
     topBar.Position = UDim2.new(0, 185*scale, 0, 5)
@@ -111,7 +106,6 @@ function Lib:CreateWindow(config)
     topBar.BorderSizePixel = 0
     Instance.new("UICorner", topBar).CornerRadius = UDim.new(0, 8)
     
-    -- Modern search box
     local searchBox = Instance.new("TextBox", topBar)
     searchBox.Size = UDim2.new(1, -20, 0, 35*scale)
     searchBox.Position = UDim2.new(0, 10, 0.5, -17.5*scale)
@@ -131,7 +125,6 @@ function Lib:CreateWindow(config)
     searchPadding.PaddingLeft = UDim.new(0, 35)
     searchPadding.PaddingRight = UDim.new(0, 10)
     
-    -- Search icon
     local searchIcon = Instance.new("ImageLabel", searchBox)
     searchIcon.Size = UDim2.new(0, 18*scale, 0, 18*scale)
     searchIcon.Position = UDim2.new(0, -25, 0.5, -9*scale)
@@ -139,7 +132,6 @@ function Lib:CreateWindow(config)
     searchIcon.Image = "rbxassetid://7072725342"
     searchIcon.ImageColor3 = Color3.fromRGB(100, 100, 100)
     
-    -- Close and minimize buttons
     local close = Instance.new("TextButton", main)
     close.Size = UDim2.new(0, 30*scale, 0, 30*scale)
     close.Position = UDim2.new(1, -35*scale, 0, 5)
@@ -184,7 +176,6 @@ function Lib:CreateWindow(config)
         end)
     end
     
-    -- Dragging
     local drag, dragStart, startPos
     topBar.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
@@ -205,7 +196,6 @@ function Lib:CreateWindow(config)
         end
     end)
     
-    -- Content area
     local content = Instance.new("ScrollingFrame", main)
     content.Size = UDim2.new(1, -195*scale, 1, -65*scale)
     content.Position = UDim2.new(0, 185*scale, 0, 60*scale)
@@ -220,14 +210,7 @@ function Lib:CreateWindow(config)
         content.CanvasSize = UDim2.new(0, 0, 0, layout.AbsoluteContentSize.Y + 10)
     end)
     
-    local win = {
-        searchableItems = {},
-        tabs = {},
-        main = main,
-        sidebar = sidebar,
-        content = content,
-        searchBox = searchBox
-    }
+    local win = {searchableItems = {}, tabs = {}, main = main, sidebar = sidebar, content = content, searchBox = searchBox}
     
     local function updateSearch(query)
         query = query:lower()
@@ -498,19 +481,27 @@ function Lib:CreateWindow(config)
         local tab = {Content = tabContent, Button = tabBtn}
         
         function tab:AddButton(text, callback, iconId)
-            return win:AddButton(text, callback, iconId).Parent = tabContent
+            local btn = win:AddButton(text, callback, iconId)
+            btn.Parent = tabContent
+            return btn
         end
         
         function tab:AddCheckbox(text, default, callback)
-            return win:AddCheckbox(text, default, callback).Parent = tabContent
+            local chk = win:AddCheckbox(text, default, callback)
+            chk.Parent = tabContent
+            return chk
         end
         
         function tab:AddDropdown(text, options, default, callback)
-            return win:AddDropdown(text, options, default, callback).Parent = tabContent
+            local dd = win:AddDropdown(text, options, default, callback)
+            dd.Parent = tabContent
+            return dd
         end
         
         function tab:AddLabel(text)
-            return win:AddLabel(text).Parent = tabContent
+            local lbl = win:AddLabel(text)
+            lbl.Parent = tabContent
+            return lbl
         end
         
         return tab
