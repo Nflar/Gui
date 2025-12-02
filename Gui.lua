@@ -1,15 +1,11 @@
 -- Gui.lua - Optimized Roblox GUI Library for Mobile & PC
--- Usage: loadstring(game:HttpGet("https://raw.githubusercontent.com/Nflar/Gui/refs/heads/main/Gui.lua"))()
-
 local GuiLibrary = {}
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 
--- Detect device type
 local isMobile = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
 local scaleFactor = isMobile and 1.2 or 1
 
--- Create ScreenGui
 local function createScreenGui()
     local screenGui = Instance.new("ScreenGui")
     screenGui.Name = "CustomGui_" .. math.random(1000, 9999)
@@ -18,14 +14,12 @@ local function createScreenGui()
     return screenGui
 end
 
--- Tween helper
 local function tween(object, properties, duration)
     duration = duration or 0.2
     local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
     TweenService:Create(object, tweenInfo, properties):Play()
 end
 
--- Create Window
 function GuiLibrary:CreateWindow(title)
     local screenGui = createScreenGui()
     screenGui.Parent = game.CoreGui
@@ -42,7 +36,6 @@ function GuiLibrary:CreateWindow(title)
     corner.CornerRadius = UDim.new(0, 8)
     corner.Parent = mainFrame
     
-    -- Title Bar
     local titleBar = Instance.new("Frame")
     titleBar.Name = "TitleBar"
     titleBar.Size = UDim2.new(1, 0, 0, 40 * scaleFactor)
@@ -54,7 +47,6 @@ function GuiLibrary:CreateWindow(title)
     titleCorner.CornerRadius = UDim.new(0, 8)
     titleCorner.Parent = titleBar
     
-    -- Title Text
     local titleLabel = Instance.new("TextLabel")
     titleLabel.Name = "Title"
     titleLabel.Size = UDim2.new(1, -100, 1, 0)
@@ -67,7 +59,6 @@ function GuiLibrary:CreateWindow(title)
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
     titleLabel.Parent = titleBar
     
-    -- Close Button
     local closeBtn = Instance.new("TextButton")
     closeBtn.Name = "CloseButton"
     closeBtn.Size = UDim2.new(0, 30 * scaleFactor, 0, 30 * scaleFactor)
@@ -90,7 +81,6 @@ function GuiLibrary:CreateWindow(title)
         screenGui:Destroy()
     end)
     
-    -- Minimize Button
     local minimizeBtn = Instance.new("TextButton")
     minimizeBtn.Name = "MinimizeButton"
     minimizeBtn.Size = UDim2.new(0, 30 * scaleFactor, 0, 30 * scaleFactor)
@@ -118,7 +108,6 @@ function GuiLibrary:CreateWindow(title)
         end
     end)
     
-    -- Dragging
     local dragging, dragInput, dragStart, startPos
     titleBar.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
@@ -141,7 +130,6 @@ function GuiLibrary:CreateWindow(title)
         end
     end)
     
-    -- Content Container
     local contentFrame = Instance.new("ScrollingFrame")
     contentFrame.Name = "Content"
     contentFrame.Size = UDim2.new(1, -20, 1, -60 * scaleFactor)
@@ -167,7 +155,6 @@ function GuiLibrary:CreateWindow(title)
         ScreenGui = screenGui
     }
     
-    -- Button
     function window:AddButton(text, callback)
         local button = Instance.new("TextButton")
         button.Size = UDim2.new(1, -10, 0, 35 * scaleFactor)
@@ -193,7 +180,6 @@ function GuiLibrary:CreateWindow(title)
         return button
     end
     
-    -- Checkbox
     function window:AddCheckbox(text, default, callback)
         local checkboxFrame = Instance.new("Frame")
         checkboxFrame.Size = UDim2.new(1, -10, 0, 35 * scaleFactor)
@@ -242,7 +228,6 @@ function GuiLibrary:CreateWindow(title)
         return checkboxFrame
     end
     
-    -- TextLabel
     function window:AddLabel(text)
         local label = Instance.new("TextLabel")
         label.Size = UDim2.new(1, -10, 0, 30 * scaleFactor)
@@ -257,7 +242,6 @@ function GuiLibrary:CreateWindow(title)
         return label
     end
     
-    -- Tabs
     function window:AddTabs()
         local tabSystem = {
             Tabs = {},
@@ -329,7 +313,91 @@ function GuiLibrary:CreateWindow(title)
             local tab = {
                 Button = tabButton,
                 Content = tabContent,
-                Name = name
+                Name = name,
+                AddButton = function(self, text, callback)
+                    local btn = Instance.new("TextButton")
+                    btn.Size = UDim2.new(1, -10, 0, 35 * scaleFactor)
+                    btn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+                    btn.Text = text
+                    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+                    btn.TextSize = 14 * scaleFactor
+                    btn.Font = Enum.Font.Gotham
+                    btn.BorderSizePixel = 0
+                    btn.Parent = tabContent
+                    
+                    local corner = Instance.new("UICorner")
+                    corner.CornerRadius = UDim.new(0, 6)
+                    corner.Parent = btn
+                    
+                    btn.MouseButton1Click:Connect(function()
+                        tween(btn, {BackgroundColor3 = Color3.fromRGB(70, 130, 255)}, 0.1)
+                        wait(0.1)
+                        tween(btn, {BackgroundColor3 = Color3.fromRGB(50, 50, 50)}, 0.1)
+                        if callback then callback() end
+                    end)
+                    
+                    return btn
+                end,
+                AddCheckbox = function(self, text, default, callback)
+                    local frame = Instance.new("Frame")
+                    frame.Size = UDim2.new(1, -10, 0, 35 * scaleFactor)
+                    frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+                    frame.BorderSizePixel = 0
+                    frame.Parent = tabContent
+                    
+                    local corner = Instance.new("UICorner")
+                    corner.CornerRadius = UDim.new(0, 6)
+                    corner.Parent = frame
+                    
+                    local lbl = Instance.new("TextLabel")
+                    lbl.Size = UDim2.new(1, -40, 1, 0)
+                    lbl.Position = UDim2.new(0, 10, 0, 0)
+                    lbl.BackgroundTransparency = 1
+                    lbl.Text = text
+                    lbl.TextColor3 = Color3.fromRGB(255, 255, 255)
+                    lbl.TextSize = 14 * scaleFactor
+                    lbl.Font = Enum.Font.Gotham
+                    lbl.TextXAlignment = Enum.TextXAlignment.Left
+                    lbl.Parent = frame
+                    
+                    local check = Instance.new("TextButton")
+                    check.Size = UDim2.new(0, 25 * scaleFactor, 0, 25 * scaleFactor)
+                    check.Position = UDim2.new(1, -30 * scaleFactor, 0.5, -12.5 * scaleFactor)
+                    check.BackgroundColor3 = default and Color3.fromRGB(70, 130, 255) or Color3.fromRGB(60, 60, 60)
+                    check.Text = default and "✓" or ""
+                    check.TextColor3 = Color3.fromRGB(255, 255, 255)
+                    check.TextSize = 16 * scaleFactor
+                    check.Font = Enum.Font.GothamBold
+                    check.BorderSizePixel = 0
+                    check.Parent = frame
+                    
+                    local checkCorner = Instance.new("UICorner")
+                    checkCorner.CornerRadius = UDim.new(0, 4)
+                    checkCorner.Parent = check
+                    
+                    local checked = default or false
+                    check.MouseButton1Click:Connect(function()
+                        checked = not checked
+                        check.Text = checked and "✓" or ""
+                        tween(check, {BackgroundColor3 = checked and Color3.fromRGB(70, 130, 255) or Color3.fromRGB(60, 60, 60)})
+                        if callback then callback(checked) end
+                    end)
+                    
+                    return frame
+                end,
+                AddLabel = function(self, text)
+                    local lbl = Instance.new("TextLabel")
+                    lbl.Size = UDim2.new(1, -10, 0, 30 * scaleFactor)
+                    lbl.BackgroundTransparency = 1
+                    lbl.Text = text
+                    lbl.TextColor3 = Color3.fromRGB(200, 200, 200)
+                    lbl.TextSize = 14 * scaleFactor
+                    lbl.Font = Enum.Font.Gotham
+                    lbl.TextXAlignment = Enum.TextXAlignment.Left
+                    lbl.Parent = tabContent
+                    
+                    return lbl
+                end
             }
             
             table.insert(tabSystem.Tabs, tab)
@@ -341,17 +409,7 @@ function GuiLibrary:CreateWindow(title)
                 tabSystem.CurrentTab = name
             end
             
-            return {
-                AddButton = function(_, text, callback)
-                    return window:AddButton(text, callback).Parent = tabContent
-                end,
-                AddCheckbox = function(_, text, default, callback)
-                    return window:AddCheckbox(text, default, callback).Parent = tabContent
-                end,
-                AddLabel = function(_, text)
-                    return window:AddLabel(text).Parent = tabContent
-                end
-            }
+            return tab
         end
         
         return tabSystem
