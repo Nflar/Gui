@@ -332,17 +332,13 @@ function Lib:CreateWindow(config)
     end
     
     function win:SaveConfig(name)
-        local config = {
-            Theme = nil
-        }
-        
+        local config = {Theme = nil}
         for presetName, preset in pairs(colorPresets) do
             if preset == currentTheme then
                 config.Theme = presetName
                 break
             end
         end
-        
         writefile(name .. ".json", game:GetService("HttpService"):JSONEncode(config))
         return true
     end
@@ -592,210 +588,199 @@ function Lib:CreateWindow(config)
             for _, elem in pairs(win.themeElements) do
                 if elem.Type == "Tab" and elem.Button == tabBtn then
                     elem.Active = true
+                
                 end
             end
         end)
         
         local tab = {Content = tabContent, Button = tabBtn}
-    
-    function win:AddButton(text, callback)
-        local btn = Instance.new("TextButton", content)
-        btn.Size = UDim2.new(1, -10, 0, 35*scale)
-        btn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-        btn.Text = text
-        btn.TextColor3 = Color3.new(1, 1, 1)
-        btn.TextSize = 14*scale
-        btn.Font = Enum.Font.Gotham
-        btn.BorderSizePixel = 0
-        Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
-        btn.MouseButton1Click:Connect(function()
-            tween(btn, {BackgroundColor3 = Color3.fromRGB(70, 130, 255)}, 0.1)
-            task.wait(0.1)
-            tween(btn, {BackgroundColor3 = Color3.fromRGB(50, 50, 50)}, 0.1)
-            if callback then callback() end
-        end)
-        return btn
-    end
-    
-    function win:AddCheckbox(text, default, callback)
-        local frame = Instance.new("Frame", content)
-        frame.Size = UDim2.new(1, -10, 0, 35*scale)
-        frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-        frame.BorderSizePixel = 0
-        Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 6)
         
-        local label = Instance.new("TextLabel", frame)
-        label.Size = UDim2.new(1, -40, 1, 0)
-        label.Position = UDim2.new(0, 10, 0, 0)
-        label.BackgroundTransparency = 1
-        label.Text = text
-        label.TextColor3 = Color3.new(1, 1, 1)
-        label.TextSize = 14*scale
-        label.Font = Enum.Font.Gotham
-        label.TextXAlignment = Enum.TextXAlignment.Left
-        
-        local check = Instance.new("TextButton", frame)
-        check.Size = UDim2.new(0, 25*scale, 0, 25*scale)
-        check.Position = UDim2.new(1, -30*scale, 0.5, -12.5*scale)
-        check.BackgroundColor3 = default and Color3.fromRGB(70, 130, 255) or Color3.fromRGB(60, 60, 60)
-        check.Text = default and "✓" or ""
-        check.TextColor3 = Color3.new(1, 1, 1)
-        check.TextSize = 16*scale
-        check.Font = Enum.Font.GothamBold
-        check.BorderSizePixel = 0
-        Instance.new("UICorner", check).CornerRadius = UDim.new(0, 4)
-        
-        local checked = default or false
-        check.MouseButton1Click:Connect(function()
-            checked = not checked
-            check.Text = checked and "✓" or ""
-            tween(check, {BackgroundColor3 = checked and Color3.fromRGB(70, 130, 255) or Color3.fromRGB(60, 60, 60)})
-            if callback then callback(checked) end
-        end)
-        return frame
-    end
-    
-    function win:AddLabel(text)
-        local label = Instance.new("TextLabel", content)
-        label.Size = UDim2.new(1, -10, 0, 30*scale)
-        label.BackgroundTransparency = 1
-        label.Text = text
-        label.TextColor3 = Color3.fromRGB(200, 200, 200)
-        label.TextSize = 14*scale
-        label.Font = Enum.Font.Gotham
-        label.TextXAlignment = Enum.TextXAlignment.Left
-        return label
-    end
-    
-    function win:AddTabs()
-        local tabs = {Tabs = {}}
-        local tabBar = Instance.new("Frame", content)
-        tabBar.Size = UDim2.new(1, -20, 0, 35*scale)
-        tabBar.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-        tabBar.BorderSizePixel = 0
-        Instance.new("UICorner", tabBar).CornerRadius = UDim.new(0, 6)
-        local tabLayout = Instance.new("UIListLayout", tabBar)
-        tabLayout.FillDirection = Enum.FillDirection.Horizontal
-        tabLayout.Padding = UDim.new(0, 5)
-        
-        function tabs:AddTab(name)
-            local btn = Instance.new("TextButton", tabBar)
-            btn.Size = UDim2.new(0, 100*scale, 1, -10)
-            btn.Position = UDim2.new(0, 0, 0, 5)
-            btn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-            btn.Text = name
-            btn.TextColor3 = Color3.fromRGB(200, 200, 200)
-            btn.TextSize = 13*scale
+        function tab:AddButton(text, callback, iconId)
+            local btn = Instance.new("TextButton", tabContent)
+            btn.Size = UDim2.new(1, -10, 0, 35*scale)
+            btn.BackgroundColor3 = currentTheme.Secondary
+            btn.Text = iconId and "" or text
+            btn.TextColor3 = currentTheme.Text
+            btn.TextSize = 14*scale
             btn.Font = Enum.Font.Gotham
             btn.BorderSizePixel = 0
-            Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 4)
+            Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
             
-            local tabContent = Instance.new("ScrollingFrame", content)
-            tabContent.Size = UDim2.new(1, -10, 1, -95*scale)
-            tabContent.Position = UDim2.new(0, 5, 0, 90*scale)
-            tabContent.BackgroundTransparency = 1
-            tabContent.BorderSizePixel = 0
-            tabContent.ScrollBarThickness = 4
-            tabContent.Visible = false
-            
-            local tabLayout = Instance.new("UIListLayout", tabContent)
-            tabLayout.Padding = UDim.new(0, 8)
-            tabLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-                tabContent.CanvasSize = UDim2.new(0, 0, 0, tabLayout.AbsoluteContentSize.Y + 10)
-            end)
+            local label
+            if iconId then
+                local icon = Instance.new("ImageLabel", btn)
+                icon.Size = UDim2.new(0, 25*scale, 0, 25*scale)
+                icon.Position = UDim2.new(0, 5, 0.5, -12.5*scale)
+                icon.BackgroundTransparency = 1
+                icon.Image = iconId
+                icon.ScaleType = Enum.ScaleType.Fit
+                
+                label = Instance.new("TextLabel", btn)
+                label.Size = UDim2.new(1, -35*scale, 1, 0)
+                label.Position = UDim2.new(0, 35*scale, 0, 0)
+                label.BackgroundTransparency = 1
+                label.Text = text
+                label.TextColor3 = currentTheme.Text
+                label.TextSize = 14*scale
+                label.Font = Enum.Font.Gotham
+                label.TextXAlignment = Enum.TextXAlignment.Left
+            end
             
             btn.MouseButton1Click:Connect(function()
-                for _, t in pairs(tabs.Tabs) do
-                    t.Button.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-                    t.Button.TextColor3 = Color3.fromRGB(200, 200, 200)
-                    t.Content.Visible = false
-                end
-                btn.BackgroundColor3 = Color3.fromRGB(70, 130, 255)
-                btn.TextColor3 = Color3.new(1, 1, 1)
-                tabContent.Visible = true
+                tween(btn, {BackgroundColor3 = currentTheme.Primary}, 0.1)
+                task.wait(0.1)
+                tween(btn, {BackgroundColor3 = currentTheme.Secondary}, 0.1)
+                if callback then callback() end
             end)
             
-            local tab = {Button = btn, Content = tabContent}
-            
-            function tab:AddButton(text, callback)
-                local b = Instance.new("TextButton", tabContent)
-                b.Size = UDim2.new(1, -10, 0, 35*scale)
-                b.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-                b.Text = text
-                b.TextColor3 = Color3.new(1, 1, 1)
-                b.TextSize = 14*scale
-                b.Font = Enum.Font.Gotham
-                b.BorderSizePixel = 0
-                Instance.new("UICorner", b).CornerRadius = UDim.new(0, 6)
-                b.MouseButton1Click:Connect(function()
-                    tween(b, {BackgroundColor3 = Color3.fromRGB(70, 130, 255)}, 0.1)
-                    task.wait(0.1)
-                    tween(b, {BackgroundColor3 = Color3.fromRGB(50, 50, 50)}, 0.1)
-                    if callback then callback() end
-                end)
-                return b
-            end
-            
-            function tab:AddCheckbox(text, default, callback)
-                local f = Instance.new("Frame", tabContent)
-                f.Size = UDim2.new(1, -10, 0, 35*scale)
-                f.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-                f.BorderSizePixel = 0
-                Instance.new("UICorner", f).CornerRadius = UDim.new(0, 6)
-                
-                local l = Instance.new("TextLabel", f)
-                l.Size = UDim2.new(1, -40, 1, 0)
-                l.Position = UDim2.new(0, 10, 0, 0)
-                l.BackgroundTransparency = 1
-                l.Text = text
-                l.TextColor3 = Color3.new(1, 1, 1)
-                l.TextSize = 14*scale
-                l.Font = Enum.Font.Gotham
-                l.TextXAlignment = Enum.TextXAlignment.Left
-                
-                local c = Instance.new("TextButton", f)
-                c.Size = UDim2.new(0, 25*scale, 0, 25*scale)
-                c.Position = UDim2.new(1, -30*scale, 0.5, -12.5*scale)
-                c.BackgroundColor3 = default and Color3.fromRGB(70, 130, 255) or Color3.fromRGB(60, 60, 60)
-                c.Text = default and "✓" or ""
-                c.TextColor3 = Color3.new(1, 1, 1)
-                c.TextSize = 16*scale
-                c.Font = Enum.Font.GothamBold
-                c.BorderSizePixel = 0
-                Instance.new("UICorner", c).CornerRadius = UDim.new(0, 4)
-                
-                local checked = default or false
-                c.MouseButton1Click:Connect(function()
-                    checked = not checked
-                    c.Text = checked and "✓" or ""
-                    tween(c, {BackgroundColor3 = checked and Color3.fromRGB(70, 130, 255) or Color3.fromRGB(60, 60, 60)})
-                    if callback then callback(checked) end
-                end)
-                return f
-            end
-            
-            function tab:AddLabel(text)
-                local l = Instance.new("TextLabel", tabContent)
-                l.Size = UDim2.new(1, -10, 0, 30*scale)
-                l.BackgroundTransparency = 1
-                l.Text = text
-                l.TextColor3 = Color3.fromRGB(200, 200, 200)
-                l.TextSize = 14*scale
-                l.Font = Enum.Font.Gotham
-                l.TextXAlignment = Enum.TextXAlignment.Left
-                return l
-            end
-            
-            table.insert(tabs.Tabs, tab)
-            if #tabs.Tabs == 1 then
-                btn.BackgroundColor3 = Color3.fromRGB(70, 130, 255)
-                btn.TextColor3 = Color3.new(1, 1, 1)
-                tabContent.Visible = true
-            end
-            return tab
+            table.insert(win.searchableItems, {element = btn, text = text})
+            table.insert(win.themeElements, {Type = "Button", Object = btn, Label = label})
+            return btn
         end
-        return tabs
+        
+        function tab:AddCheckbox(text, default, callback)
+            local frame = Instance.new("Frame", tabContent)
+            frame.Size = UDim2.new(1, -10, 0, 35*scale)
+            frame.BackgroundColor3 = currentTheme.Secondary
+            frame.BorderSizePixel = 0
+            Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 6)
+            
+            local label = Instance.new("TextLabel", frame)
+            label.Size = UDim2.new(1, -40, 1, 0)
+            label.Position = UDim2.new(0, 10, 0, 0)
+            label.BackgroundTransparency = 1
+            label.Text = text
+            label.TextColor3 = currentTheme.Text
+            label.TextSize = 14*scale
+            label.Font = Enum.Font.Gotham
+            label.TextXAlignment = Enum.TextXAlignment.Left
+            
+            local check = Instance.new("TextButton", frame)
+            check.Size = UDim2.new(0, 25*scale, 0, 25*scale)
+            check.Position = UDim2.new(1, -30*scale, 0.5, -12.5*scale)
+            check.BackgroundColor3 = default and currentTheme.Primary or Color3.fromRGB(60, 60, 60)
+            check.Text = default and "✓" or ""
+            check.TextColor3 = currentTheme.Text
+            check.TextSize = 16*scale
+            check.Font = Enum.Font.GothamBold
+            check.BorderSizePixel = 0
+            Instance.new("UICorner", check).CornerRadius = UDim.new(0, 4)
+            
+            local checked = default or false
+            check.MouseButton1Click:Connect(function()
+                checked = not checked
+                check.Text = checked and "✓" or ""
+                tween(check, {BackgroundColor3 = checked and currentTheme.Primary or Color3.fromRGB(60, 60, 60)})
+                if callback then callback(checked) end
+            end)
+            
+            table.insert(win.searchableItems, {element = frame, text = text})
+            table.insert(win.themeElements, {Type = "Checkbox", Frame = frame, Label = label, Check = check})
+            return frame
+        end
+        
+        function tab:AddDropdown(text, options, default, callback)
+            local frame = Instance.new("Frame", tabContent)
+            frame.Size = UDim2.new(1, -10, 0, 35*scale)
+            frame.BackgroundColor3 = currentTheme.Secondary
+            frame.BorderSizePixel = 0
+            Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 6)
+            
+            local label = Instance.new("TextLabel", frame)
+            label.Size = UDim2.new(0.5, -10, 1, 0)
+            label.Position = UDim2.new(0, 10, 0, 0)
+            label.BackgroundTransparency = 1
+            label.Text = text
+            label.TextColor3 = currentTheme.Text
+            label.TextSize = 14*scale
+            label.Font = Enum.Font.Gotham
+            label.TextXAlignment = Enum.TextXAlignment.Left
+            
+            local dropdown = Instance.new("TextButton", frame)
+            dropdown.Size = UDim2.new(0.5, -20, 0, 25*scale)
+            dropdown.Position = UDim2.new(0.5, 5, 0.5, -12.5*scale)
+            dropdown.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+            dropdown.Text = default or options[1] or "Select"
+            dropdown.TextColor3 = currentTheme.Text
+            dropdown.TextSize = 12*scale
+            dropdown.Font = Enum.Font.Gotham
+            dropdown.BorderSizePixel = 0
+            Instance.new("UICorner", dropdown).CornerRadius = UDim.new(0, 4)
+            
+            local arrow = Instance.new("TextLabel", dropdown)
+            arrow.Size = UDim2.new(0, 20, 1, 0)
+            arrow.Position = UDim2.new(1, -20, 0, 0)
+            arrow.BackgroundTransparency = 1
+            arrow.Text = "▼"
+            arrow.TextColor3 = currentTheme.Text
+            arrow.TextSize = 10*scale
+            
+            local listFrame = Instance.new("Frame", sg)
+            listFrame.Size = UDim2.new(0, 200*scale, 0, math.min(#options * 30*scale, 150*scale))
+            listFrame.BackgroundColor3 = currentTheme.Secondary
+            listFrame.BorderSizePixel = 0
+            listFrame.Visible = false
+            listFrame.ZIndex = 10
+            Instance.new("UICorner", listFrame).CornerRadius = UDim.new(0, 6)
+            
+            local listScroll = Instance.new("ScrollingFrame", listFrame)
+            listScroll.Size = UDim2.new(1, 0, 1, 0)
+            listScroll.BackgroundTransparency = 1
+            listScroll.BorderSizePixel = 0
+            listScroll.ScrollBarThickness = 4
+            
+            local listLayout = Instance.new("UIListLayout", listScroll)
+            listLayout.Padding = UDim.new(0, 2)
+            listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+                listScroll.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y)
+            end)
+            
+            for _, option in ipairs(options) do
+                local optBtn = Instance.new("TextButton", listScroll)
+                optBtn.Size = UDim2.new(1, -5, 0, 28*scale)
+                optBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+                optBtn.Text = option
+                optBtn.TextColor3 = currentTheme.Text
+                optBtn.TextSize = 12*scale
+                optBtn.Font = Enum.Font.Gotham
+                optBtn.BorderSizePixel = 0
+                Instance.new("UICorner", optBtn).CornerRadius = UDim.new(0, 4)
+                
+                optBtn.MouseButton1Click:Connect(function()
+                    dropdown.Text = option
+                    listFrame.Visible = false
+                    if callback then callback(option) end
+                end)
+            end
+            
+            dropdown.MouseButton1Click:Connect(function()
+                listFrame.Visible = not listFrame.Visible
+                if listFrame.Visible then
+                    local absPos = dropdown.AbsolutePosition
+                    listFrame.Position = UDim2.new(0, absPos.X, 0, absPos.Y + dropdown.AbsoluteSize.Y + 5)
+                end
+            end)
+            
+            table.insert(win.searchableItems, {element = frame, text = text})
+            table.insert(win.themeElements, {Type = "Dropdown", Frame = frame, Label = label, Dropdown = dropdown})
+            return frame
+        end
+        
+        function tab:AddLabel(text)
+            local label = Instance.new("TextLabel", tabContent)
+            label.Size = UDim2.new(1, -10, 0, 30*scale)
+            label.BackgroundTransparency = 1
+            label.Text = text
+            label.TextColor3 = Color3.fromRGB(200, 200, 200)
+            label.TextSize = 14*scale
+            label.Font = Enum.Font.Gotham
+            label.TextXAlignment = Enum.TextXAlignment.Left
+            return label
+        end
+        
+        return tab
     end
+    
     return win
 end
 
